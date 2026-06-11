@@ -17,8 +17,8 @@ def greet():
 greet()
 
 
-#parameter
-#argument
+#parameter are variables listed in a function definition
+#argument are the values ypu pass into the function when calling it
 
 #Example with one parameter
 def info(name):
@@ -53,4 +53,9 @@ metro()
 #Example with multiple parameters
 def student(name , age , grade):
     print(name , age , grade)
-student("Aung Aung" , "Grade 8" , 13)
+student("Aung Aung" , 13 , "Grade 8")
+
+#Example with Keyword Argument
+#when using keyword arguments , order doesn't matter
+
+
