@@ -31,3 +31,11 @@ for i in range(1,6):
     #* 
 for i in range(5, 0, -1):
     print("* " * i)
+
+
+number = int(input("Enter Number : "))
+total = 0
+for i in range(1,number):
+  square = i ** 2
+  total = total + square
+print(total)

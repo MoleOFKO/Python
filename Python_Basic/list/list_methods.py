@@ -30,7 +30,7 @@ names = ["John", "Doe", "John", "Alex"]
 print(names.count("John"))
 
 # index() method  finds the position of an items
-colors = ["red", "green", "blue"]
+colors = ["red", "blue", "green"]
 print(colors.index("green"))
 
 
