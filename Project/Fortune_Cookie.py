@@ -31,6 +31,6 @@ while taste_choose != 0:
     elif chose == 5:
         print("Ohh..  Your choice SWEET... Not Bad, Not bad \n BTW Eat less Sweet")
         taste_choose == 0
-        to_press()
+        # to_press()
     else:
         taste_choose == 1
