@@ -1,21 +1,52 @@
 import sys
 import random
-import builtins
+
+
+def get_input(type):
+    while True:
+        try:
+            return input(type)
+        except EOFError:
+            print("Input error. Please try again.")
+        except KeyboardInterrupt:
+            print("Input cancelled.")
+            return ""
+
+
+def get_int(type, min_value=None, max_value=None):
+    while True:
+        raw_value = get_input(type).strip()
+        try:
+            value = int(raw_value)
+        except ValueError:
+            print("Invalid input. Please enter a whole number.")
+            continue
+        if min_value is not None and value < min_value:
+            print(f"Please enter a number greater than or equal to {min_value}.")
+            continue
+        if max_value is not None and value > max_value:
+            print(f"Please enter a number less than or equal to {max_value}.")
+            continue
+        return value
+
+
+def get_yes_no(type):
+    while True:
+        answer = get_input(type).strip().lower()
+        if answer in ["y", "yes"]:
+            return True
+        if answer in ["n", "no"]:
+            return False
+        print("Invalid input. Please enter y or n.")
+
 
 def to_press():     #Enter to Continue function
-    enter = input("\n ...........................Press the Enter to Continue........................... \n")
-    
-    
+    get_input("\n ...........................Press the Enter to Continue........................... \n")
+
 
 def game_exit():
-    try:
-        quit = input("Do you want to quit? (y/n): ").lower()
-        if quit == "y":
-            sys.exit()
-        # exit no
-    except TypeError:
-        print("Invalid Input. \nOnly y or n")
-        game_exit()
+    if get_yes_no("Do you want to quit? (y/n): "):
+        sys.exit()
     
 
 def color():    
@@ -25,7 +56,7 @@ def color():
         to_press()
                     
         # choose colour
-        color_choice = int(input(" 1. Red \n 2. Green \n 3. Yellow \n 4. Orange \n 5. Purple \n 6. White \n 7. Brown \n"))
+        color_choice = get_int(" 1. Red \n 2. Green \n 3. Yellow \n 4. Orange \n 5. Purple \n 6. White \n 7. Brown \n", 1, 7)
                     
         if color_choice == 1:
             color = "Red" 
@@ -46,7 +77,7 @@ def color():
             to_press()
             continue 
                         
-        confirm = input(f"So your choice is {color}. Yes? (y/n): ").lower()
+        confirm = get_yes_no(f"So your choice is {color}. Yes? (y/n): ")
         to_press()
         if quality_choose(confirm):
             return color
@@ -57,14 +88,19 @@ def color():
         
 # confirm function
 def quality_choose(confirm):
-    if confirm in ["y", "yes", "ye", "yse", "sye", "esy", "es"]:
+    if isinstance(confirm, str):
+        confirm = confirm.strip().lower()
+    if confirm in ["y", "yes", "ye", "yse", "sye", "esy", "es", 1, True]:
         return True
     return False
+
+def replay_the_game():
+    return get_yes_no("Do you want to play again? (y/n): ")
 
 #game choice
 def game_choice():
     # game choice
-    game_choice = int(input("\n Okie! \n Here the Games are : \n1. Tic Tat Toe\n2. Guess the Number\n3. Maths \n4. Back"))
+    game_choice = get_int("\n Okie! \n Here the Games are : \n1. Tic Tat Toe\n2. Guess the Number\n3. Maths \n4. Back\n", 1, 4)
     if game_choice == 1:
         return "Tic Tac Toe"
     elif game_choice == 2:
@@ -78,26 +114,1284 @@ def game_choice():
         to_press()
         game_choice()
 
+def open_fortune_cookie(category=None):
+    # If no category is specified, pick a random category first
+    if not category:
+        category = random.choice(list(fortune_cookies.keys()))
+    
+    # Pick a random fortune from the chosen category
+    fortune = random.choice(fortune_cookies[category])
+    
+    print(f"🥠 [Fortune Cookie - {category.capitalize()}]")
+    print(f'"{fortune}"\n')
+
+
+def choose_fortune_cookie():
+    while True:
+        choice_cookie = get_int(
+            "Which fortune cookie do you want to open? \n"
+            "1. Luck \n"
+            "2. Wisdom \n"
+            "3. Cryptic \n"
+            "4. Humor \n"
+            "5. Back\n",
+            1,
+            5,
+        )
+
+        if choice_cookie == 1:
+            open_fortune_cookie("luck")
+            return "luck"
+        elif choice_cookie == 2:
+            open_fortune_cookie("wisdom")
+            return "wisdom"
+        elif choice_cookie == 3:
+            open_fortune_cookie("cryptic")
+            return "cryptic"
+        elif choice_cookie == 4:
+            open_fortune_cookie("humor")
+            return "humor"
+        elif choice_cookie == 5:
+            print("Returning to the previous menu...")
+            return "back"
+
 # tic tac toe
 def tic_tac_toe():
-    print("Tic Tac Toe")
+    point_got = 0
+
+    print("\n--- Welcome to the Tic Tac Toe Challenge! ---")
+    print("\nLet's get started!")
+    to_press()
+    print("Are you Ready?")
+
+    while True:
+        board = [" "] * 9
+        current_player = "X"
+
+        while True:
+            print(f" {board[0]} | {board[1]} | {board[2]}")
+            print("-+-+-")
+            print(f" {board[3]} | {board[4]} | {board[5]}")
+            print("-+-+-")
+            print(f" {board[6]} | {board[7]} | {board[8]}")
+
+            if current_player == "X":
+                choice = get_int("Choose a slot 1-9: ", 1, 9) - 1
+                if board[choice] != " ":
+                    print("That slot is already taken. Try again.")
+                    continue
+            else:
+                empty_slots = []
+                for i, value in enumerate(board):
+                    if value == " ":
+                        empty_slots.append(i)
+                choice = random.choice(empty_slots)
+                print(f"Computer chooses slot {choice + 1}.")
+
+            board[choice] = current_player
+
+            if (
+                board[0] == board[1] == board[2] != " " or
+                board[3] == board[4] == board[5] != " " or
+                board[6] == board[7] == board[8] != " " or
+                board[0] == board[3] == board[6] != " " or
+                board[1] == board[4] == board[7] != " " or
+                board[2] == board[5] == board[8] != " " or
+                board[0] == board[4] == board[8] != " " or
+                board[2] == board[4] == board[6] != " "
+            ):
+                print(f"{current_player} wins!")
+                if current_player == "X":
+                    point_got += 10
+                break
+
+            if " " not in board:
+                print("It's a draw.")
+                break
+
+            current_player = "O" if current_player == "X" else "X"
+
+        if not replay_the_game():
+            break
+
+    return point_got
 
 # guess the number
 def guess_the_number():
-    guess_number_difficulty = input("Guess the Number" \
+    print("\n--- Welcome to the Guess the Number Challenge! ---")
+    point_got = 0
+
+    difficulty_choice = get_int("Guess the Number" \
     "\n There are :" \
     "\n1. 1 Digit Guess" \
     "\n2. 2 Digit Guess" \
     "\n3. 3 Digit Guess" \
-    "\n4. 4 Digit Guess")
-    if guess_number_difficulty == 1:
-        print()
+    "\n4. 4 Digit Guess\n", 1, 4)
+    guess_number_difficulty = get_int(f"\n Are you sure that you will choose ({difficulty_choice}) difficulty? \n1. Yes \n2. No\n", 1, 2)
+    while quality_choose(guess_number_difficulty):
+        if difficulty_choice == 1:
+            replay = 1
+            while replay != 0:
+                print("\nSo your choice is 1 digit guess...")
+                to_press()
+                print("Are you Ready?")
+                to_press()
+                have_to_same_number = random.randint(0, 9)
+                guessed_number = get_int("Enter your number 1 Number: ", 0, 9)
+                if have_to_same_number == guessed_number:
+                    print("Wow! You successfully Guess the number.")
+                    to_press()
+                    point_got += 5
+                else:
+                    print("You Lose")
+                if replay_the_game():
+                    replay = 1
+                else:
+                    replay = 0
+        elif difficulty_choice == 2:
+            replay = 1
+            while replay != 0:
+                print("\nSo your choice is 2 digit guess...")
+                to_press()
+                print("Are you Ready?")
+                to_press()
+                have_to_same_number = random.randint(10, 99)
+                guessed_number = get_int("Enter your number 2 Numbers: ", 10, 99)
+                if have_to_same_number == guessed_number:
+                    print("Wow! You successfully Guess the number.")
+                    to_press()
+                    point_got += 10
+                else:
+                    print("You Lose")
+                if replay_the_game():
+                    replay = 1
+                else:
+                    replay = 0
+        elif difficulty_choice == 3:
+            replay = 1
+            while replay != 0:
+                print("\nSo your choice is 3 digit guess...")
+                to_press()
+                print("Are you Ready?")
+                to_press()
+                have_to_same_number = random.randint(100, 999)
+                guessed_number = get_int("Enter your number 3 Numbers: ", 100, 999)
+                if have_to_same_number == guessed_number:
+                    print("Wow! You successfully Guess the number.")
+                    to_press()
+                    point_got += 15
+                else:
+                    print("You Lose")
+                if replay_the_game():
+                    replay = 1
+                else:
+                    replay = 0
+        elif difficulty_choice == 4:
+            replay = 1
+            while replay != 0:
+                print("\nSo your choice is 4 digit guess...")
+                to_press()
+                print("Are you Ready?")
+                to_press()
+                have_to_same_number = random.randint(1000, 9999)
+                guessed_number = get_int("Enter your number 4 Numbers: ", 1000, 9999)
+                if have_to_same_number == guessed_number:
+                    print("Wow! You successfully Guess the number.")
+                    to_press()
+                    point_got += 20
+                else:
+                    print("You Lose")
+                if replay_the_game():
+                    replay = 1
+                else:
+                    replay = 0
+        else:
+            print("No No. \n Only Enter 1 number and number should be 1 to 4")
+            to_press()
+            guess_the_number()
+        return point_got
+
+    else:
+        print("\nNo No. \nOnly Enter 1 number and number should be 1 to 4")
+        to_press()
+        guess_the_number()
+        
+    
         
 
 
 # maths
-def maths():
-    print("Maths")
+def math_solve():
+    print("\n--- Welcome to the Math Solve Challenge! ---")
+    point_got = 0
+    
+    # Let the user pick their difficulty tier
+    level_choice = get_int(
+        "Select your Math Level:\n"
+        "1. Level 1 (Addition)      [5 Points]\n"
+        "2. Level 2 (Subtraction)   [10 Points]\n"
+        "3. Level 3 (Multiplication)[15 Points]\n"
+        "4. Level 4 (Division)      [20 Points]\n"
+        "5. Level 5 (Mixed Easy)    [25 Points]\n"
+        "6. Level 6 (Mixed Hard)    [30 Points]\n"
+        "7. Back\n", 1, 7
+    )
+    
+    if level_choice == 7:
+        return 0
+
+    confirm = get_yes_no(f"Are you sure you want to attempt Level {level_choice}? (y/n): ")
+    if not quality_choose(confirm):
+        return math_solve() # Restart selection if they change their mind
+
+    replay = 1
+    while replay != 0:
+        print(f"\nPreparing Level {level_choice} problem...")
+        to_press()
+        
+        # Core Math logic generators for each level
+        if level_choice == 1:
+            num1 = random.randint(1, 99)
+            num2 = random.randint(1, 99)
+            operator = random.choice(["+", "-"])
+            if operator == "+":
+                correct_answer = num1 + num2
+                problem_text = f"What is {num1} + {num2}? "
+            elif operator == "-":
+                correct_answer = num1 - num2
+                problem_text = f"What is {num1} - {num2}? "
+            points_allocated = 5
+
+        elif level_choice == 2:
+            num1 = random.randint(1, 99)
+            num2 = random.randint(1, 99)
+            operator = random.choice(["+", "-", "*", "/"])
+            if operator == "+":
+                correct_answer = num1 + num2
+                problem_text = f"What is {num1} + {num2}? "
+            elif operator == "-":
+                correct_answer = num1 - num2
+                problem_text = f"What is {num1} - {num2}? "
+            elif operator == "*":
+                correct_answer = num1 * num2
+                problem_text = f"What is {num1} × {num2}? "
+            elif operator == "/":
+                correct_answer = num1 / num2
+                problem_text = f"What is {num1} ÷ {num2}? "
+            points_allocated = 10
+
+        elif level_choice == 3:
+            num1 = random.randint(1, 99)
+            num2 = random.randint(1, 99)
+            num3 = random.randint(1, 99)
+            first_operator = random.choice(["+", "-", "*", "/"])
+            second_operator = random.choice(["+", "-", "*", "/"])
+            if first_operator == "+":
+                
+                if second_operator == "+":
+                    correct_answer = num1 + num2 + num3
+                    problem_text = f"What is {num1} + {num2} + {num3}? "
+
+                elif second_operator == "-":
+                    correct_answer = num1 + num2 - num3
+                    problem_text = f"What is {num1} + {num2} - {num3}? "
+
+                elif second_operator == "*":
+                    correct_answer = num1 + num2 * num3
+                    problem_text = f"What is {num1} + {num2} * {num3}? "
+
+                elif second_operator == "/":
+                    correct_answer = num1 + num2 / num3
+                    problem_text = f"What is {num1} + {num2} ÷ {num3}? "
+
+            elif first_operator == "-":
+
+                if second_operator == "+":
+                    correct_answer = num1 - num2 + num3
+                    problem_text = f"What is {num1} + {num2} + {num3}? "
+
+                elif second_operator == "-":
+                    correct_answer = num1 - num2 - num3
+                    problem_text = f"What is {num1} + {num2} - {num3}? "
+
+                elif second_operator == "*":
+                    correct_answer = num1 - num2 * num3
+                    problem_text = f"What is {num1} + {num2} * {num3}? "
+
+                elif second_operator == "/":
+                    correct_answer = num1 - num2 / num3
+                    problem_text = f"What is {num1} + {num2} ÷ {num3}? "
+
+            elif first_operator == "*":
+
+                if second_operator == "+":
+                    correct_answer = num1 * num2 + num3
+                    problem_text = f"What is {num1} + {num2} + {num3}? "
+
+                elif second_operator == "-":
+                    correct_answer = num1 * num2 - num3
+                    problem_text = f"What is {num1} + {num2} - {num3}? "
+
+                elif second_operator == "*":
+                    correct_answer = num1 * num2 * num3
+                    problem_text = f"What is {num1} + {num2} * {num3}? "
+
+                elif second_operator == "/":
+                    correct_answer = num1 * num2 / num3
+                    problem_text = f"What is {num1} + {num2} ÷ {num3}? "
+
+            elif first_operator == "/":
+
+                if second_operator == "+":
+                    correct_answer = num1 / num2 + num3
+                    problem_text = f"What is {num1} + {num2} + {num3}? "
+
+                elif second_operator == "-":
+                    correct_answer = num1 / num2 - num3
+                    problem_text = f"What is {num1} + {num2} - {num3}? "
+
+                elif second_operator == "*":
+                    correct_answer = num1 / num2 * num3
+                    problem_text = f"What is {num1} + {num2} * {num3}? "
+
+                elif second_operator == "/":
+                    correct_answer = num1 / num2 / num3
+                    problem_text = f"What is {num1} + {num2} ÷ {num3}? "
+
+            points_allocated = 15
+
+        elif level_choice == 4:
+            num1 = random.randint(1, 99)
+            num2 = random.randint(1, 99)
+            num3 = random.randint(1, 99)
+            num4 = random.randint(1, 99)
+            first_operator = random.choice(["+", "-", "*", "/"])
+            second_operator = random.choice(["+", "-", "*", "/"])
+            third_operator = random.choice(["+", "-", "*", "/"])
+            if first_operator == "+":
+                
+                if second_operator == "+":
+                    
+                    if third_operator == "+":
+                        correct_answer = num1 + num2 + num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 + num2 + num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 + num2 + num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 + num2 + num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+                elif second_operator == "-":
+
+                    if third_operator == "+":
+                        correct_answer = num1 + num2 - num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 + num2 - num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 + num2 - num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 + num2 - num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+                elif second_operator == "*":
+
+                    if third_operator == "+":
+                        correct_answer = num1 + num2 * num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 + num2 * num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 + num2 * num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 + num2 * num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+                elif second_operator == "/":
+
+                    if third_operator == "+":
+                        correct_answer = num1 + num2 / num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 + num2 / num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 + num2 / num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 + num2 / num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+            elif first_operator == "-":
+
+                if second_operator == "+":
+                    
+                    if third_operator == "+":
+                        correct_answer = num1 - num2 + num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 - num2 + num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 - num2 + num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 - num2 + num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+                elif second_operator == "-":
+
+                    if third_operator == "+":
+                        correct_answer = num1 - num2 - num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 - num2 - num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 - num2 - num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 - num2 - num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+                elif second_operator == "*":
+
+                    if third_operator == "+":
+                        correct_answer = num1 - num2 * num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 - num2 * num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 - num2 * num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 - num2 * num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+                elif second_operator == "/":
+
+                    if third_operator == "+":
+                        correct_answer = num1 - num2 / num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 - num2 / num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 - num2 / num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 - num2 / num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+            elif first_operator == "*":
+
+                if second_operator == "+":
+                    
+                    if third_operator == "+":
+                        correct_answer = num1 * num2 + num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 * num2 + num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 * num2 + num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 * num2 + num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+                elif second_operator == "-":
+
+                    if third_operator == "+":
+                        correct_answer = num1 * num2 - num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 * num2 - num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 * num2 - num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 * num2 - num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+                elif second_operator == "*":
+
+                    if third_operator == "+":
+                        correct_answer = num1 * num2 * num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 * num2 * num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 * num2 * num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 * num2 * num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+                elif second_operator == "/":
+
+                    if third_operator == "+":
+                        correct_answer = num1 * num2 / num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 * num2 / num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 * num2 / num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 * num2 / num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+            elif first_operator == "/":
+
+                if second_operator == "+":
+                    
+                    if third_operator == "+":
+                        correct_answer = num1 / num2 + num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 / num2 + num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 / num2 + num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 / num2 + num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+                elif second_operator == "-":
+
+                    if third_operator == "+":
+                        correct_answer = num1 / num2 - num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 / num2 - num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 / num2 - num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 / num2 - num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+                elif second_operator == "*":
+
+                    if third_operator == "+":
+                        correct_answer = num1 / num2 * num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 / num2 * num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 / num2 * num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 / num2 * num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+                elif second_operator == "/":
+
+                    if third_operator == "+":
+                        correct_answer = num1 / num2 / num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 / num2 / num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 / num2 / num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 / num2 / num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+            points_allocated = 20
+
+        elif level_choice == 5:
+            num1 = random.randint(100, 999)
+            num2 = random.randint(100, 999)
+            num3 = random.randint(100, 999)
+            num4 = random.randint(100, 999)
+            first_operator = random.choice(["+", "-", "*", "/"])
+            second_operator = random.choice(["+", "-", "*", "/"])
+            third_operator = random.choice(["+", "-", "*", "/"])
+            if first_operator == "+":
+                
+                if second_operator == "+":
+                    
+                    if third_operator == "+":
+                        correct_answer = num1 + num2 + num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 + num2 + num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 + num2 + num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 + num2 + num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+                elif second_operator == "-":
+
+                    if third_operator == "+":
+                        correct_answer = num1 + num2 - num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 + num2 - num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 + num2 - num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 + num2 - num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+                elif second_operator == "*":
+
+                    if third_operator == "+":
+                        correct_answer = num1 + num2 * num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 + num2 * num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 + num2 * num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 + num2 * num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+                elif second_operator == "/":
+
+                    if third_operator == "+":
+                        correct_answer = num1 + num2 / num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 + num2 / num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 + num2 / num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 + num2 / num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+            elif first_operator == "-":
+
+                if second_operator == "+":
+                    
+                    if third_operator == "+":
+                        correct_answer = num1 - num2 + num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 - num2 + num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 - num2 + num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 - num2 + num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+                elif second_operator == "-":
+
+                    if third_operator == "+":
+                        correct_answer = num1 - num2 - num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 - num2 - num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 - num2 - num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 - num2 - num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+                elif second_operator == "*":
+
+                    if third_operator == "+":
+                        correct_answer = num1 - num2 * num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 - num2 * num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 - num2 * num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 - num2 * num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+                elif second_operator == "/":
+
+                    if third_operator == "+":
+                        correct_answer = num1 - num2 / num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 - num2 / num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 - num2 / num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 - num2 / num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+            elif first_operator == "*":
+
+                if second_operator == "+":
+                    
+                    if third_operator == "+":
+                        correct_answer = num1 * num2 + num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 * num2 + num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 * num2 + num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 * num2 + num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+                elif second_operator == "-":
+
+                    if third_operator == "+":
+                        correct_answer = num1 * num2 - num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 * num2 - num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 * num2 - num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 * num2 - num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+                elif second_operator == "*":
+
+                    if third_operator == "+":
+                        correct_answer = num1 * num2 * num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 * num2 * num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 * num2 * num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 * num2 * num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+                elif second_operator == "/":
+
+                    if third_operator == "+":
+                        correct_answer = num1 * num2 / num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 * num2 / num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 * num2 / num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 * num2 / num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+            elif first_operator == "/":
+
+                if second_operator == "+":
+                    
+                    if third_operator == "+":
+                        correct_answer = num1 / num2 + num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 / num2 + num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 / num2 + num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 / num2 + num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+                elif second_operator == "-":
+
+                    if third_operator == "+":
+                        correct_answer = num1 / num2 - num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 / num2 - num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 / num2 - num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 / num2 - num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+                elif second_operator == "*":
+
+                    if third_operator == "+":
+                        correct_answer = num1 / num2 * num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 / num2 * num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 / num2 * num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 / num2 * num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+                elif second_operator == "/":
+
+                    if third_operator == "+":
+                        correct_answer = num1 / num2 / num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 / num2 / num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 / num2 / num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 / num2 / num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+            points_allocated = 25
+
+        elif level_choice == 6:
+            num1 = random.randint(1000, 9999)
+            num2 = random.randint(1000, 9999)
+            num3 = random.randint(1000, 9999)
+            num4 = random.randint(1000, 9999)
+            first_operator = random.choice(["+", "-", "*", "/"])
+            second_operator = random.choice(["+", "-", "*", "/"])
+            third_operator = random.choice(["+", "-", "*", "/"])
+            if first_operator == "+":
+                
+                if second_operator == "+":
+                    
+                    if third_operator == "+":
+                        correct_answer = num1 + num2 + num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 + num2 + num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 + num2 + num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 + num2 + num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+                elif second_operator == "-":
+
+                    if third_operator == "+":
+                        correct_answer = num1 + num2 - num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 + num2 - num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 + num2 - num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 + num2 - num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+                elif second_operator == "*":
+
+                    if third_operator == "+":
+                        correct_answer = num1 + num2 * num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 + num2 * num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 + num2 * num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 + num2 * num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+                elif second_operator == "/":
+
+                    if third_operator == "+":
+                        correct_answer = num1 + num2 / num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 + num2 / num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 + num2 / num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 + num2 / num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+            elif first_operator == "-":
+
+                if second_operator == "+":
+                    
+                    if third_operator == "+":
+                        correct_answer = num1 - num2 + num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 - num2 + num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 - num2 + num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 - num2 + num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+                elif second_operator == "-":
+
+                    if third_operator == "+":
+                        correct_answer = num1 - num2 - num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 - num2 - num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 - num2 - num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 - num2 - num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+                elif second_operator == "*":
+
+                    if third_operator == "+":
+                        correct_answer = num1 - num2 * num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 - num2 * num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 - num2 * num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 - num2 * num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+                elif second_operator == "/":
+
+                    if third_operator == "+":
+                        correct_answer = num1 - num2 / num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 - num2 / num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 - num2 / num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 - num2 / num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+            elif first_operator == "*":
+
+                if second_operator == "+":
+                    
+                    if third_operator == "+":
+                        correct_answer = num1 * num2 + num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 * num2 + num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 * num2 + num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 * num2 + num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+                elif second_operator == "-":
+
+                    if third_operator == "+":
+                        correct_answer = num1 * num2 - num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 * num2 - num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 * num2 - num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 * num2 - num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+                elif second_operator == "*":
+
+                    if third_operator == "+":
+                        correct_answer = num1 * num2 * num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 * num2 * num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 * num2 * num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 * num2 * num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+                elif second_operator == "/":
+
+                    if third_operator == "+":
+                        correct_answer = num1 * num2 / num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 * num2 / num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 * num2 / num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 * num2 / num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+            elif first_operator == "/":
+
+                if second_operator == "+":
+                    
+                    if third_operator == "+":
+                        correct_answer = num1 / num2 + num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 / num2 + num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 / num2 + num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 / num2 + num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+                elif second_operator == "-":
+
+                    if third_operator == "+":
+                        correct_answer = num1 / num2 - num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 / num2 - num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 / num2 - num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 / num2 - num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+                elif second_operator == "*":
+
+                    if third_operator == "+":
+                        correct_answer = num1 / num2 * num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 / num2 * num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 / num2 * num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 / num2 * num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+
+                elif second_operator == "/":
+
+                    if third_operator == "+":
+                        correct_answer = num1 / num2 / num3 + num4
+                        problem_text = f"What is {num1} + {num2} + {num3} + {num4}? "
+
+                    elif third_operator == "-":
+                        correct_answer = num1 / num2 / num3 - num4
+                        problem_text = f"What is {num1} + {num2} - {num3} - {num4}? "
+
+                    elif third_operator == "*":
+                        correct_answer = num1 / num2 / num3 * num4
+                        problem_text = f"What is {num1} + {num2} * {num3} * {num4}? "
+
+                    elif third_operator == "/":
+                        correct_answer = num1 / num2 / num3 / num4
+                        problem_text = f"What is {num1} + {num2} ÷ {num3} / {num4}? "
+            points_allocated = 30
+
+        # type user for the answer
+        user_answer = get_int(problem_text)
+        
+        if user_answer == correct_answer:
+            print(f"🎉 Correct! You got {points_allocated} points.")
+            point_got += points_allocated
+        else:
+            print(f"Incorrect! The correct answer was {correct_answer}.")
+            
+        to_press()
+        
+        if replay_the_game():
+            replay = 1
+        else:
+            replay = 0
+            
+    return point_got
 
     
 
@@ -115,9 +1409,9 @@ while from_start != 0:
     main_menu = 1
     while main_menu != 0:
         # start game or exit
-        start_end = int(input("Let's Get started!" \
+        start_end = get_int("Let's Get started!" \
         "\n1. Let's Goo!" \
-        "\n2. Later (Exit)"))
+        "\n2. Later (Exit)\n", 1, 2)
         if start_end == 1:
 
             chosen_taste = ""
@@ -126,7 +1420,7 @@ while from_start != 0:
             #taste choose here
             taste_choose = 1
             while taste_choose != 0: 
-                chose = int(input("\nHere..  What taste do you wanna choose? \n 1. Sweet \n 2. Sour \n 3. Spicy \n 4. Normal \n 5. back \n 6. Exit\n"))
+                chose = get_int("\nHere..  What taste do you wanna choose? \n 1. Sweet \n 2. Sour \n 3. Spicy \n 4. Normal \n 5. back \n 6. Exit\n", 1, 6)
                 
                 choice = 0
                 #sweet
@@ -134,7 +1428,7 @@ while from_start != 0:
                     print("\nOhh..  Your choice SWEET... Not Bad, Not bad \n BTW Eat less Sweet")
                     to_press()
                     
-                    confirm = input("Are you sure you want Sweet? \n y/n: ").lower()
+                    confirm = get_yes_no("Are you sure you want Sweet? \n y/n: ")
                     if quality_choose(confirm):
                         chosen_taste = "Sweet"
                         taste_choose = 0
@@ -144,7 +1438,7 @@ while from_start != 0:
                     print("\nOhh..  Your choice SOUR... Huh.. \n Sour..... ( ͠° ͟ʖ ͡°)")
                     to_press()
 
-                    confirm = input("Are you sure you want Sour? \n y/n: ").lower()
+                    confirm = get_yes_no("Are you sure you want Sour? \n y/n: ")
                     if quality_choose(confirm):
                         chosen_taste = "Sour"
                         taste_choose = 0
@@ -154,7 +1448,7 @@ while from_start != 0:
                     print("\nOhh..  Your choice SPICY... Not Bad, Not bad \n I like spicy too. Our like are same.ヾ(≧▽≦*)o")
                     to_press()
 
-                    confirm = input("Are you sure you want Spicy? \n y/n: ").lower()
+                    confirm = get_yes_no("Are you sure you want Spicy? \n y/n: ")
                     if quality_choose(confirm):
                         chosen_taste = "Spicy"
                         taste_choose = 0 
@@ -164,7 +1458,7 @@ while from_start != 0:
                     print("\nOhh..  Your choice NORMAL... Best Choice! \n It's a recommended one tho. ^_~")
                     to_press()
 
-                    confirm = input("Are you sure you want Normal? \n y/n: ").lower()
+                    confirm = get_yes_no("Are you sure you want Normal? \n y/n: ")
                     if quality_choose(confirm):
                         chosen_taste = "Normal"
                         taste_choose = 0
@@ -177,7 +1471,7 @@ while from_start != 0:
                 # Exit
                 elif chose == 6:
                     print("Are you going to LEAVE? ≧ ﹏ ≦")
-                    confirm = input("Are you sure you want Normal? \n y/n: ").lower()
+                    confirm = get_yes_no("Are you sure you want Normal? \n y/n: ")
                     if quality_choose(confirm):
                         while True:
                             print("Bye Bye....ಠ﹏ಠ")
@@ -196,10 +1490,10 @@ while from_start != 0:
             to_press()
 
             print("\nAfter choosing the color and taste of your likes, let's goes to the main theme")
-            total_point = 100
+            total_point = 10
 
             # explain how point work
-            know = input(f"Here are your points: {total_point}\nEnter '?' to know what the points are for: ")
+            know = get_input(f"Here are your points: {total_point}\nEnter '?' to know what the points are for: ")
             if know == "?":
                 print("Point : Special point that use to get the Fortune Cookie. " \
                 "\nHow to Get? \n Play games to earn the point. " \
@@ -220,65 +1514,106 @@ while from_start != 0:
             to_press()
 
             from_start1 = 1
-            while from_start1 != 0: 
-                use_point = input("Here the List of the Fortune Cookie For you " \
-                "\n 1. Poor     :   20  points" \
-                "\n 2. Normal   :   30  points" \
-                "\n 3. Good     :   40  points" \
-                "\n 4. Premium  :   50  points" \
-                "\n 5. Back" \
-                "\n ?. Difference of the Fortune Cookie")
-                if use_point == "1":
-                    point_use = 20
-                elif use_point == "2":
-                    point_use = 30
-                elif use_point == "3":
-                    point_use = 40
-                elif use_point == "4":
-                    point_use = 50
-                elif use_point == "5":
-                    point_use = 0
-                elif use_point == "?":
-                    print("Poor : Taste is Random. Very poor color \n Normal : Taste is not that good. Color is somewhat good. \n Good : 40 points \n Premium : 50 points")
-                else:
-                    print("Invalid choice, please try again.")
-                if point_use != 0:
-                    if point_use > total_point:
-                        print("You don't have enough points")
-                        to_press()
-                        play_game_or_not = input("Do you want to play the game? (y/n): ").lower()
-                        if play_game_or_not == "y":
-                            game_choice()
-                            if game_choice() == "Back":
-                                from_start1 = 0
-                                continue
-                            elif game_choice() == "Tic Tac Toe":
-                                tic_tac_toe()
-                                from_start1 = 0
-                                continue
-                            elif game_choice() == "Guess the Number":
-                                guess_the_number()
-                                from_start1 = 0
-                                continue
-                            elif game_choice() == "Maths":
-                                math_solve()
-                                from_start1 = 0
-                                continue
-                        elif play_game_or_not == "n":
-                            game_exit()
+            fortune_cookies = {
+                "luck": [
+                    "An unexpected item will soon bring you great fortune.",
+                    "Your next gamble will pay off handsomely.",
+                    "A rare encounter awaits you in the most unlikely place.",
+                    "Bad luck will look away from you for the next three days.",
+                    "A golden opportunity is hiding in plain sight."
+                ],
+                "wisdom": [
+                    "The sharpest blade is forged in the hottest fire.",
+                    "To find the path forward, look closely at where you fell.",
+                    "A hoard of gold is worthless if you lack the strength to carry it.",
+                    "Do not mistake a brief rest for the end of the journey.",
+                    "The wisest warrior knows when to walk away from a empty chest."
+                ],
+                "cryptic": [
+                    "Beware of the shadow that moves faster than the light.",
+                    "The walls have eyes, but the floor has secrets.",
+                    "What you seek is also seeking you.",
+                    "When the clock strikes midnight, do not look behind you.",
+                    "A closed door is sometimes the safest place to be."
+                ],
+                "humor": [
+                    "You will soon feel a sudden urge to buy more health potions.",
+                    "Error 404: Fortune not found. Try breaking another cookie.",
+                    "Help! I am trapped inside a fortune cookie factory!",
+                    "Do not look back. Something might be gaining on you. (Just kidding, or am I?)",
+                    "Your pockets will soon be heavy, but mostly with useless rocks."
+                ]
+            }
+
+            while from_start1 != 0:
+                print(f"\nYour current points: {total_point}")
+                print("1. Play Tic Tac Toe")
+                print("2. Play Guess the Number")
+                print("3. Play Maths")
+                print("4. Open Fortune Cookie")
+                print("5. Back")
+                menu_choice = get_int("Choose an option: ", 1, 5)
+
+                if menu_choice == 1:
+                    get_point = tic_tac_toe()
+                    total_point += get_point
+                    print(f"You earned {get_point} points. Total points: {total_point}")
+                    to_press()
+
+                elif menu_choice == 2:
+                    get_point = guess_the_number()
+                    total_point += get_point
+                    print(f"You earned {get_point} points. Total points: {total_point}")
+                    to_press()
+
+                elif menu_choice == 3:
+                    get_point = math_solve()
+                    total_point += get_point
+                    print(f"You earned {get_point} points. Total points: {total_point}")
+                    to_press()
+
+                elif menu_choice == 4:
+                    while True:
+                        print(f"\nYou have {total_point} points.")
+                        print("1. Poor     (20 points)")
+                        print("2. Normal   (30 points)")
+                        print("3. Good     (40 points)")
+                        print("4. Premium  (50 points)")
+                        print("5. Back")
+
+                        fortune_choice = get_int("Choose an option: ", 1, 5)
+
+                        if fortune_choice == 5:
+                            break
+
+                        if fortune_choice == 1:
+                            point_use = 20
+                        elif fortune_choice == 2:
+                            point_use = 30
+                        elif fortune_choice == 3:
+                            point_use = 40
                         else:
-                            from_start1 = 1
-                        continue
+                            point_use = 50
 
-                    # point use
-                    else:
-                        total_point -= point_use
+                        if point_use > total_point:
+                            print("You don't have enough points.")
+                            if get_yes_no("Do you want to play a game to earn points? (y/n): "):
+                                break
+                            else:
+                                game_exit()
+                        else:
+                            total_point -= point_use
+                            choose_fortune_cookie()
+                            print(f"You have {total_point} points left.")
+                            to_press()
+                            break
 
-                        print(f"You have {total_point} points left")
-                        to_press()
-                        from_start1 = 0
+                elif menu_choice == 5:
+                    from_start1 = 1
+
                 else:
-                    from_start1 = 0
+                    print("Invalid choice.")
+                from_start1 = 1
         elif start_end == 2:
             game_exit()     
         else:
