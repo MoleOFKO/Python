@@ -64,7 +64,7 @@ class Dino:
 
     def update(self, dt):
         # dt is in seconds. Scale gravity/jump accordingly.
-        gravity = 35.0  # px/s^2
+        gravity = 800.0  # px/s^2
         self.vy += gravity * dt
         self.y += self.vy * dt
 

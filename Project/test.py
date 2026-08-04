@@ -1,4 +1,6 @@
-player_choice = ["O", "X", "O"]
+x = 10
+def modify():
+    x = 5
 
-if "O" in player_choice[0] and player_choice[1] and player_choice[2]:
-    print("You Win")
+modify()
+print(x)

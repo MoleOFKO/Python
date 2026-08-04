@@ -25,7 +25,7 @@ print(num3)
 # Syntax : random.seed(value)
 # print(random.seed(10))
 random.seed(10)
-print(random.randrange())
+print(random.randrange(1))
 print(random.random())
 # print(random.randint())
 
