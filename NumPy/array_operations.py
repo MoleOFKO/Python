@@ -28,6 +28,13 @@ print("subtraction is : ", x - y)
 #Each element is multiplied by its corresponding element, it is not matrix multiplication
 print("Multiplication is : " , x * y)
 
+#Matrix Multiplication:
+#np.dot() - matrix multiplication, not element-wise multiplication
+#it is essential in neural networks and deep learning
+A = np.array([[1, 2], [3, 4]])
+B = np.array([[5, 6], [7, 8]])
+print("Matrix is : " , np.dot(A,B))
+
 #Divides corresponding elements and it is usually a floating-point array
 print("Division is : " , x / y)
 

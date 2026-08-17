@@ -1,0 +1,18 @@
+Epoch 1 begins to ends
+forward pass and backward pass
+
+Neural Network and Backpropagation
+
+Neural Network
+input (can be 1 or more), output (1), between input and output Hidden Network
+
+Backpropagation
+Forward and Backward again and again
+
+Batch one epoch is too big so divided it in several smaller batches
+
+Batch Size is a hyperparameter.
+
+Batch Size number of training in batch.
+
+
