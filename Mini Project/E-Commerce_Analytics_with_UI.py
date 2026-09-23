@@ -34,8 +34,8 @@ SAMPLE_DATA = pd.DataFrame({
     "Product": [
         "Headphones", "Desk Lamp", "T-Shirt", "Keyboard", "Skincare Set",
         "Coffee Maker", "Jeans", "Mouse", "Face Cream", "Cushion", "Sneakers",
-        "Monitor", "Shampoo", "Table Organizer", "Jacket", "Webcam", "Perfume",
-        "Vacuum Cleaner", "Dress", "Tablet",
+        "T-Shirt", "Shampoo", "Table Organizer", "Jacket", "Webcam", "Perfume",
+        "Vacuum Cleaner", "Dress", "Headphones",
     ],
     "Quantity": [2, 1, 3, 1, 2, 1, 2, 3, 1, 2, 1, 1, 3, 2, 1, 2, 1, 1, 2, 1],
     "Unit_Price": [45, 35, 22, 70, 30, 85, 55, 25, 28, 18, 75, 240, 20, 32, 90, 65, 60, 150, 80, 320],
@@ -166,7 +166,7 @@ def association_rules(data, minimum_support=0.10, minimum_confidence=0.30):
     return pd.DataFrame(rules).sort_values("Lift", ascending=False)
 
 
-def analyze_ecommerce(file_path=None, cluster_count=3, minimum_support=0.10, minimum_confidence=0.30):
+def analyze_ecommerce(file_path=None, cluster_count=3, minimum_support=0.05, minimum_confidence=0.30):
     """Run preprocessing, clustering, PCA, anomaly detection, and Apriori."""
     data = load_data(file_path)
     features = data[NUMERIC_FEATURES].to_numpy(dtype=float)
@@ -235,12 +235,33 @@ def analyze_ecommerce(file_path=None, cluster_count=3, minimum_support=0.10, min
 
 
 APP_CSS = """
-.gradio-container { max-width: 1240px !important; background: #f4f7f6; }
+.gradio-container { max-width: 1240px !important; background: #f4f7f6 !important; color: #123b3a !important; color-scheme: light; }
+.gradio-container label, .gradio-container .tabitem, .gradio-container .block label span { color: #244d49 !important; }
+.gradio-container input, .gradio-container textarea, .gradio-container button { color: #123b3a !important; }
+.gradio-container input[type="number"], .gradio-container input[type="text"] { background: #ffffff !important; border: 1px solid #c7d8d4 !important; color: #123b3a !important; }
+.gradio-container [data-testid="block-info"], .gradio-container .info-text { background: transparent !important; color: #244d49 !important; }
+.gradio-container [data-testid="block-info"] { border-radius: 0 !important; padding: 0 !important; }
+.gradio-container .gr-accordion, .gradio-container [data-testid="accordion"] { background: #ffffff !important; border: 1px solid #dbe7e4 !important; }
+.gradio-container .gr-accordion > button, .gradio-container [data-testid="accordion"] > button { background: #ffffff !important; color: #123b3a !important; }
+.gradio-container .gr-accordion > button span, .gradio-container [data-testid="accordion"] > button span { color: #123b3a !important; opacity: 1 !important; }
+.gradio-container .gr-accordion > button svg, .gradio-container [data-testid="accordion"] > button svg { color: #2f7770 !important; stroke: #2f7770 !important; }
+.gradio-container .gr-accordion *, .gradio-container [data-testid="accordion"] * { color: #244d49 !important; }
+.gradio-container .gr-accordion > button *, .gradio-container [data-testid="accordion"] > button * { color: #123b3a !important; }
+.gradio-container .gr-accordion > div, .gradio-container [data-testid="accordion"] > div { background: #ffffff !important; }
+.gradio-container .gr-accordion .label-wrap, .gradio-container .gr-accordion .info, .gradio-container [data-testid="accordion"] .label-wrap, .gradio-container [data-testid="accordion"] .info { color: #244d49 !important; opacity: 1 !important; visibility: visible !important; }
+.gradio-container .gr-accordion .label-wrap span, .gradio-container .gr-accordion .info span, .gradio-container [data-testid="accordion"] .label-wrap span, .gradio-container [data-testid="accordion"] .info span { color: #244d49 !important; opacity: 1 !important; }
+.gradio-container .gr-accordion input[type="range"] + *, .gradio-container [data-testid="accordion"] input[type="range"] + * { color: #244d49 !important; }
+.gradio-container .gr-accordion input[type="range"], .gradio-container [data-testid="accordion"] input[type="range"] { accent-color: #2f7770 !important; }
+.gradio-container [data-testid="accordion-content"], .gradio-container [data-testid="accordion-content"] .form, .gradio-container [data-testid="accordion-content"] .block { background: #ffffff !important; }
+.gradio-container [data-testid="accordion-content"] .block label, .gradio-container [data-testid="accordion-content"] .block .info-text, .gradio-container [data-testid="accordion-content"] .block span { color: #244d49 !important; }
 .app-header { padding: 18px 2px 10px; }
 .app-header h1 { color: #123b3a; font-size: 36px; letter-spacing: -1px; margin: 5px 0; }
 .app-header p { color: #55706e; font-size: 15px; margin: 0; }
 .eyebrow, .panel-label { color: #2f7770; font-size: 11px; font-weight: 700; letter-spacing: 1.4px; }
-.dashboard { background: #ffffff; border: 1px solid #dbe7e4; border-radius: 14px; padding: 24px; margin: 18px 0; box-shadow: 0 8px 24px rgba(18, 59, 58, .06); }
+.dashboard { background: #ffffff !important; color: #244d49 !important; border: 1px solid #dbe7e4; border-radius: 14px; padding: 24px; margin: 18px 0; box-shadow: 0 8px 24px rgba(18, 59, 58, .06); }
+.dashboard h2, .dashboard p, .dashboard span, .dashboard strong, .dashboard small, .dashboard b { color: #244d49; }
+.dashboard .kpi-card.accent, .dashboard .kpi-card.accent b, .dashboard .kpi-card.accent small, .dashboard .kpi-card.accent span { color: #ffffff; }
+.dashboard .kpi-card.accent span, .dashboard .kpi-card.accent small { color: #b9d9ce; }
 .dashboard-heading { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 22px; }
 .dashboard-heading h2 { color: #123b3a; font-size: 25px; margin: 5px 0 0; }
 .status-pill { background: #e5f4ed; color: #247052; border-radius: 999px; padding: 8px 12px; font-size: 12px; font-weight: 700; }
@@ -265,7 +286,7 @@ APP_CSS = """
 """
 
 
-with gr.Blocks(title="E-Commerce Analytics", css=APP_CSS, theme=gr.themes.Soft(primary_hue="teal", neutral_hue="slate")) as app:
+with gr.Blocks(title="E-Commerce Analytics") as app:
     gr.HTML("""
     <header class='app-header'>
       <span class='eyebrow'>E-COMMERCE INTELLIGENCE</span>
@@ -281,7 +302,7 @@ with gr.Blocks(title="E-Commerce Analytics", css=APP_CSS, theme=gr.themes.Soft(p
     with gr.Accordion("Tune analysis", open=False):
         with gr.Row():
             cluster_input = gr.Slider(2, 6, value=3, step=1, label="Clusters", info="K-Means groups")
-            support_input = gr.Slider(0.05, 0.50, value=0.10, step=0.05, label="Support", info="Apriori minimum")
+            support_input = gr.Slider(0.05, 0.50, value=0.05, step=0.05, label="Support", info="Apriori minimum")
             confidence_input = gr.Slider(0.10, 1.00, value=0.30, step=0.05, label="Confidence", info="Apriori minimum")
 
     summary_output = gr.HTML()
@@ -301,4 +322,4 @@ with gr.Blocks(title="E-Commerce Analytics", css=APP_CSS, theme=gr.themes.Soft(p
 
 
 if __name__ == "__main__":
-    app.launch()
+    app.launch(css=APP_CSS, theme=gr.themes.Soft(primary_hue="teal", neutral_hue="slate"))
