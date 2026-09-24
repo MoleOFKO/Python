@@ -2,81 +2,70 @@
 
 ## 1. Project Overview
 
-This project analyzes e-commerce transaction data through one executable Python file with a Gradio interface. The application supports CSV loading, preprocessing, customer/order clustering, dimensionality reduction, anomaly detection, and association rule learning.
+This project focuses on analyzing e-commerce transaction data to extract meaningful business insights from customer purchases, product categories, pricing patterns, and transaction behavior. The analysis was implemented in a Python application that integrates data preprocessing, clustering, dimensionality reduction, anomaly detection, and association-rule learning in a single workflow.
 
-Main files:
-
-- `E-Commerce_Analytics.py`: complete analytics application and Gradio UI
-- `e_commerce_example.csv`: example input dataset
+The study uses a sample e-commerce dataset containing transaction records across multiple product categories and customer segments. The objective is to understand buying patterns, identify high-value transactions, and evaluate how transactional features relate to one another in a structured data-driven manner.
 
 ## 2. Objectives
 
-The project was created to:
+The project was designed to investigate several key aspects of the dataset, including:
 
-1. Load and validate e-commerce transaction data.
-2. Calculate transaction revenue after discounts.
-3. Group similar transactions with K-Means clustering.
-4. Reduce numeric features to two dimensions using PCA.
-5. Detect unusual transactions using standardized distance scores.
-6. Discover product associations using Apriori rules.
-7. Display the results through a Gradio web interface.
+- validating and cleaning transaction records;
+- calculating revenue after discounts;
+- identifying similarities among transactions using clustering techniques;
+- reducing the dimensionality of transaction features for visualization;
+- detecting unusual purchase patterns through anomaly detection;
+- exploring possible product associations using association-rule mining.
 
-## 3. Dataset
+## 3. Dataset Description
 
-The example dataset contains 20 transactions, 15 customers, 20 products, and four product categories.
+The example dataset includes 20 transactions, 15 customers, 20 products, and four product categories. It contains transaction-level details essential for retail and customer behavior analysis.
 
-Required columns:
+The required fields in the dataset are:
 
 | Column | Description |
 |---|---|
-| `Order_ID` | Unique order identifier |
-| `Order_Date` | Date of the order |
-| `Customer_ID` | Customer identifier |
-| `Category` | Product category |
-| `Product` | Product name |
-| `Quantity` | Number of units purchased |
-| `Unit_Price` | Price per unit before discount |
-| `Discount` | Discount as a decimal from 0 to 1 |
-| `Region` | Customer or order region |
+| Order_ID | Unique order identifier |
+| Order_Date | Date of the order |
+| Customer_ID | Customer identifier |
+| Category | Product category |
+| Product | Product name |
+| Quantity | Number of units purchased |
+| Unit_Price | Price per unit before discount |
+| Discount | Discount as a decimal between 0 and 1 |
+| Region | Customer or order region |
 
-Revenue is calculated as:
+The revenue for each transaction was computed using the formula:
 
 ```text
 Revenue = Quantity * Unit_Price * (1 - Discount)
 ```
 
-## 4. Methods
+## 4. Methodology
 
-### Data Loading and Preprocessing
+### 4.1 Data Preprocessing
 
-The application can use the included sample data or an uploaded CSV file. It validates required columns, converts dates, converts numeric fields, limits discounts to the range 0 to 1, rejects invalid dates or prices, and calculates revenue.
+The dataset was loaded and validated to ensure consistency and reliability. Empty or missing values, invalid dates, incorrect numeric formats, and discounts outside the acceptable range were identified and handled. After preprocessing, revenue was calculated for each transaction to create a more informative analysis variable.
 
-### K-Means Clustering
+### 4.2 K-Means Clustering
 
-The numeric features used for clustering are:
+A K-Means clustering model was applied to the standardized transaction features, including quantity, unit price, discount, and revenue. Standardization was necessary to ensure that features with different scales contributed fairly to the clustering process. The model grouped transactions into clusters based on similarity in purchasing and pricing behavior.
 
-- Quantity
-- Unit price
-- Discount
-- Revenue
+### 4.3 Principal Component Analysis (PCA)
 
-The features are standardized before K-Means is applied. The number of clusters can be selected in the Gradio interface. The default is three clusters.
+Principal Component Analysis was used to reduce the dimensionality of the standardized feature set into two principal components. This allowed the dataset to be visualized in a lower-dimensional space while preserving as much variance as possible. The first two components explained approximately 86.8% of the total variance, indicating that the reduced representation captured most of the underlying structure in the data.
 
-### Principal Component Analysis
+### 4.4 Anomaly Detection
 
-PCA is calculated from the standardized numeric features using the covariance matrix and eigenvectors. The first two principal components are displayed in the dimensionality-reduction table.
+An anomaly detection approach based on standardized Euclidean distance was applied to identify unusually high-value or irregular transactions. Transactions above the 95th percentile of the distance score were marked as anomalies, which helped highlight transactions that departed significantly from the typical purchasing pattern.
 
-For the example data, the first two components explain approximately 62.7% and 24.1% of the variance, or 86.8% combined.
+### 4.5 Association Rule Learning
 
-### Anomaly Detection
+Association rule analysis was conducted to identify product combinations that frequently appeared together within customer baskets. Using an Apriori-style method, rules were evaluated based on support, confidence, and lift to determine whether certain products tended to be purchased together.
 
-Each transaction receives a standardized Euclidean distance score. Transactions at or above the 95th percentile are marked as anomalies.
+## 5. Results and Analysis
 
-### Association Rule Learning
-
-The application groups products by customer and uses an Apriori-style process to find frequent itemsets. Rules are ranked using support, confidence, and lift. Minimum support and minimum confidence can be changed in the interface.
-
-## 5. Example Results
+### 5.1 Overall Transaction Summary
 
 | Metric | Result |
 |---|---:|
@@ -89,7 +78,7 @@ The application groups products by customer and uses an Apriori-style process to
 | Anomalies detected | 1 |
 | Association rules at default thresholds | 0 |
 
-### Cluster Distribution
+### 5.2 Cluster Distribution
 
 | Cluster | Transactions |
 |---|---:|
@@ -97,53 +86,46 @@ The application groups products by customer and uses an Apriori-style process to
 | Cluster 2 | 9 |
 | Cluster 3 | 2 |
 
-### Detected Anomaly
+The clustering results suggest that the dataset contains three noticeable transaction groups with different purchase patterns. The distribution indicates that most transactions fall into two larger clusters, while a smaller cluster contains transactions with more distinct characteristics.
 
-The transaction identified as an anomaly is:
+### 5.3 Anomaly Identification
 
-| Order ID | Product | Revenue | Anomaly score |
+The anomaly detected in the dataset was a high-value tablet order:
+
+| Order ID | Product | Revenue | Anomaly Score |
 |---:|---|---:|---:|
 | 1020 | Tablet | $256.00 | 4.868 |
 
-This result is reasonable because the tablet transaction has a high price and relatively high discounted revenue compared with most other example transactions.
+This transaction stands out because it combines a relatively high unit price with a large discounted revenue contribution. The anomaly score indicates that it deviates significantly from the general pattern of the dataset and may warrant further review.
 
-### Category Performance
+### 5.4 Category Performance
 
-| Category | Orders | Units sold | Revenue |
+| Category | Orders | Units Sold | Revenue |
 |---|---:|---:|---:|
 | Electronics | 6 | 10 | $817.50 |
 | Fashion | 5 | 9 | $455.95 |
 | Home | 5 | 7 | $357.50 |
 | Beauty | 4 | 7 | $190.20 |
 
-Electronics generated the highest revenue in the example dataset.
+The category analysis shows that Electronics generated the highest total revenue, followed by Fashion, Home, and Beauty. This suggests that electronic products contribute the most value in the sample dataset and are likely the most profitable category overall.
 
-## 6. How to Run
+## 6. Interpretation of Findings
 
-Install the required packages if they are not already installed:
+The results suggest that customer purchases vary meaningfully by product category, transaction value, and discount behavior. The clustering output indicates that transactions are not homogeneous; instead, they form groups with distinct purchasing patterns. PCA further supports this conclusion by showing that a large proportion of the variation in the data can be summarized using just two components.
 
-```powershell
-pip install numpy pandas gradio
-```
+The anomaly detection process successfully identified a transaction with unusually high revenue relative to the rest of the dataset. This is useful for highlighting potential outliers or large-value purchases that may deserve additional investigation.
 
-Start the application from the project root:
+The absence of strong association rules at the default thresholds indicates that there are not enough repeated product combinations within customer baskets to produce meaningful recommendations. This is common in small or sparse transaction datasets, where repeated co-purchase patterns are limited.
 
-```powershell
-python "Mini Project/E-Commerce_Analytics.py"
-```
+## 7. Limitations and Future Improvements
 
-The application opens a local Gradio URL. The user can either analyze the built-in sample data or upload `e_commerce_example.csv`.
+Several limitations should be acknowledged when interpreting the results:
 
-## 7. Interpretation
+- K-Means clustering depends on the selected number of clusters and the chosen features.
+- The anomaly detector relies on a percentile-based distance threshold rather than labeled fraud or irregularity data.
+- Association rule mining requires a larger dataset with more repeated customer purchase combinations to produce robust recommendations.
+- The current analysis is based on a small sample and may not fully represent broader consumer behavior.
+- A more advanced implementation could include interactive charts, trend analysis, and a richer dashboard for presentation.
 
-The example data shows that Electronics is the strongest revenue category. The clustering output separates transactions according to their standardized quantity, price, discount, and revenue patterns. PCA provides a two-dimensional view of those relationships. The anomaly detector highlights the high-value Tablet order for further review.
+Overall, the project demonstrates how data analysis techniques can be applied to e-commerce sales data to uncover meaningful patterns in customer spending, product performance, and unusual purchase behavior. The results provide a solid foundation for further development in business intelligence and retail analytics.
 
-No association rules are shown with the default thresholds because the example dataset has too few repeated product combinations within customer baskets. A larger transaction history with customers buying multiple recurring product combinations would produce more useful rules.
-
-## 8. Limitations and Future Improvements
-
-- K-Means results depend on the selected number of clusters and feature selection.
-- The anomaly detector uses a simple percentile distance threshold rather than a supervised fraud label.
-- Association rules require a larger basket-oriented dataset for reliable recommendations.
-- The current report displays tables; future work could add interactive charts for clusters, PCA, revenue trends, and anomalies.
-- Product and customer names in a real dataset should be reviewed for privacy before sharing results.
