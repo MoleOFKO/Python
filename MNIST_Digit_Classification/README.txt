@@ -1,23 +1,23 @@
 MNIST HANDWRITTEN DIGIT CLASSIFICATION
-======================================
-This Project uses:
+=======================================
+This project uses:
 -Python
 -TensorFlow / Keras
 -MNIST dataset
 -Neural Network
--Streamlit
+-streamlit
 
 PROJECT FILES
-=============
+==============
 train_model.py
 app.py
 requirements
 
 COMMANDS
-==========
-1. Install Packages:
-        pip install -r requirements.txt
+=========
+1. Install packages:
+	pip install -r requirements.txt
 2. Train the model:
-        python train_model.python
-3. Run Streamlit :
-        streamlit run app.py
+	python train_model.py
+3. Run Streamlit:
+	streamlit run app.py
