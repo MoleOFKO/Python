@@ -1,0 +1,4 @@
+# Ignore generated dataset folders
+# This keeps the MNIST source dataset from being pushed to Git
+MNIST_Digit_Classification/dataset/
+dataset/
