@@ -340,4 +340,64 @@ plt.plot(
     label = "Training Accuracy"
 )
 
-plt.plot()
+plt.plot(
+    history.history["val_accuracy"],
+    label = "Validation Accuracy"
+)
+
+plt.title("Training and Testing Accuracy")
+plt.xlabel("Epochs")
+plt.ylabel("Accuracy")
+plt.legend()
+
+plt.savefig("accuracy.png")
+plt.show()
+
+#----------------------------------------------
+# 15. Visualize Loss
+#----------------------------------------------
+plt.figure(figsize=(8,5))
+
+plt.plot(
+    history.history["loss"],
+    label = "Training Loss"
+)
+
+plt.plot(
+    history.history["val_loss"],
+    label = "Validation Loss"
+)
+
+plt.title("Training and Testing Loss")
+plt.xlabel("Epochs")
+plt.ylabel("Loss")
+plt.legend()
+
+plt.savefig("loss.png")
+plt.show()
+
+#----------------------------------------------
+# 16. Test Custom Reviews
+#----------------------------------------------
+
+custom_reviews = [
+    "The movie was amazing and I really enjoyed it.",
+    "The movie was boring and I did not like it."
+]
+
+predictions = model.predict(custom_reviews)
+
+print("\nCustom Review Predictions: ")
+for review, prediction in zip(
+    custom_reviews,
+    predictions
+):
+    sentiment = (
+        "Positive" 
+        if prediction[0] >= 0.5 
+        else "Negative"
+    )
+    print(f"Review: {review}")
+    print(f"Sentiment: {sentiment}")
+
+    
