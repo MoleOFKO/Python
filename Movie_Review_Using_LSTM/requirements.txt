@@ -1,0 +1,5 @@
+tensorflow
+nltk # natural language tool kit
+numpy
+matplotlib
+streamlit

@@ -13,4 +13,4 @@ Command
 2. Train the CNN:
         python train_model.py
 3. Run the streamlit application:
-        streamlit run app.python
+        streamlit run app.py

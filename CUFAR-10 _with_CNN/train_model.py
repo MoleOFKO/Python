@@ -59,7 +59,7 @@ def save_images(images, labels, main_folder):
     print(f"Saving images to {main_folder}...")
 
     # loop though all all images and get the image index
-    for index, images in enumerate(images):
+    for index, image in enumerate(images):
         class_name = CLASS_NAMES[int(labels[index])]
 
         # Create the complete file path for the image
@@ -72,7 +72,7 @@ def save_images(images, labels, main_folder):
         # Check wether the image file does not exist
         if not os.path.exists(filename):
             # Convert the Numpy array into an image and save it as PNG
-            Image.fromarray(images).save(filename)
+            Image.fromarray(image).save(filename)
 
 #==========================================================
 # 5. Load CIFAR-10 dataset
@@ -147,14 +147,68 @@ model.compile(
 )
 
 #==========================================================
-# 0. Train the model
+# 9. Train the model
 #==========================================================
-model.fit(
+history = model.fit(
     x_train,
     y_train,
     epochs = EPOCHS,
     batch_size = BATCH_SIZE,
-    validation_data = (x_test, y_test)
+    validation_split = 0.1
 )
 
 #==========================================================
+#10. Evaluate  model
+#==========================================================
+# Evaluate the model using unseen test data
+test_loss, test_accuracy = model.evaluate(x_test, y_test)
+
+print("\n---------------------------------------------")
+print("Model Evaluation")
+print("---------------------------------------------")
+
+print(f"Test Loss: {test_loss:.4f}")
+print(f"Test Accuracy: {test_accuracy:.4f}")
+
+#==========================================================
+# 11. Saved model
+#==========================================================
+# Save the trainee CNN model as a Keras file
+model.save(MODEL_PATH)
+
+print(f"\nModel saved to {MODEL_PATH}.")
+
+#==========================================================
+# 12. Save Accuracy Graph
+#==========================================================
+plt.figure(figsize=(8, 6))
+plt.plot(history.history['accuracy'], label='Training Accuracy')
+plt.plot(history.history['val_accuracy'], label='Validation Accuracy')
+
+plt.title('CNN Accuracy')
+plt.xlabel('Epochs')
+plt.ylabel('Accuracy')
+plt.legend()
+plt.savefig('accuracy_graph.png')
+plt.close()
+
+#==========================================================
+# 13. Save Loss Graph
+#==========================================================
+plt.figure(figsize=(8, 6))
+plt.plot(history.history['loss'], label='Training Loss')
+plt.plot(history.history['val_loss'], label='Validation Loss')
+
+plt.title('CNN Loss')
+plt.xlabel('Epochs')
+plt.ylabel('Loss')
+plt.legend()
+plt.tight_layout() # automatically adjust the graph
+plt.savefig('loss_graph.png')
+plt.close()
+
+#==========================================================
+# 14. Sample Predictions
+#==========================================================
+# Predict the classes of 10 test images
+predictions = model.predict(x_test[:10], verbose=0)
