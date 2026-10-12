@@ -293,7 +293,7 @@ train_dataset.prefetch(
 )
 
 print("Training model...")
-model.fit(
+history = model.fit(
     train_dataset,
     epochs=5
 )
@@ -302,3 +302,42 @@ model.fit(
 # 12. Evaluate model
 #----------------------------------------------
 print("Evaluating model...")
+
+test_dataset = tf.data.Dataset.from_tensor_slices(
+    (test_texts, test_labels)
+)
+
+test_dataset = test_dataset.batch(64)
+
+test_dataset = test_dataset.prefetch(
+    tf.data.AUTOTUNE
+)
+
+# Evalute the trained model
+test_loss, test_accuracy = model.evaluate(
+    test_dataset
+)
+
+print(f"Test Accuracy: {test_accuracy * 100:.2f}%")
+print(f"Test Loss: {test_loss:.4f}")
+
+#----------------------------------------------
+# 13. Save Model
+#----------------------------------------------
+
+model.save(MODEL_PATH)
+
+print(f"Model saved as: {MODEL_PATH}")
+
+#----------------------------------------------
+# 14. Visualize Accuracy
+#----------------------------------------------
+
+plt.figure(figsize=(8,5))
+
+plt.plot(
+    history.history["accuracy"],
+    label = "Training Accuracy"
+)
+
+plt.plot()
