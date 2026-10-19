@@ -35,7 +35,7 @@ TRAIN_FOLDER = os.path.join(DATASET_FOLDER, "train")
 # Create the testing folder path
 TEST_FOLDER = os.path.join(DATASET_FOLDER, "test")
 
-MODEL_PATH = "setiment_lstm.keras"
+MODEL_PATH = "sentiment_lstm.keras"
 
 #----------------------------------------------
 # 3. Create dataset folders
@@ -155,8 +155,8 @@ def save_reviews(reviews, labels, folder, max_per_class):
 
             negative_count += 1
 
-        # Convert the encoded review back into text
-        text = decode_review(reviews)
+        # Convert the current encoded review back into text
+        text = decode_review(review)
 
         # Clean the review text
         text = clean_text(text)
@@ -284,17 +284,22 @@ train_dataset = train_dataset.shuffle(
     reshuffle_each_iteration=True
     )
 
-# Crate batches of 64 samples
+# Create batches of 64 samples
 train_dataset = train_dataset.batch(64)
+train_dataset = train_dataset.prefetch(tf.data.AUTOTUNE)
 
-# improve input performance
-train_dataset.prefetch(
-    tf.data.AUTOTUNE
+# Create validation/test dataset
+# We use the test set to validate while training and again for final evaluation.
+test_dataset = tf.data.Dataset.from_tensor_slices(
+    (test_texts, test_labels)
 )
+test_dataset = test_dataset.batch(64)
+test_dataset = test_dataset.prefetch(tf.data.AUTOTUNE)
 
 print("Training model...")
 history = model.fit(
     train_dataset,
+    validation_data=test_dataset,
     epochs=5
 )
 
@@ -302,16 +307,6 @@ history = model.fit(
 # 12. Evaluate model
 #----------------------------------------------
 print("Evaluating model...")
-
-test_dataset = tf.data.Dataset.from_tensor_slices(
-    (test_texts, test_labels)
-)
-
-test_dataset = test_dataset.batch(64)
-
-test_dataset = test_dataset.prefetch(
-    tf.data.AUTOTUNE
-)
 
 # Evalute the trained model
 test_loss, test_accuracy = model.evaluate(
@@ -385,7 +380,7 @@ custom_reviews = [
     "The movie was boring and I did not like it."
 ]
 
-predictions = model.predict(custom_reviews)
+predictions = model.predict(np.array(custom_reviews, dtype=object))
 
 print("\nCustom Review Predictions: ")
 for review, prediction in zip(

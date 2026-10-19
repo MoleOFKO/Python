@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+dataset/
+.keras/
+.tmp/
+*.keras
+*.png
+raw_dataset/

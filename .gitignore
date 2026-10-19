@@ -2,3 +2,15 @@
 # This keeps the MNIST source dataset from being pushed to Git
 MNIST_Digit_Classification/dataset/
 dataset/
+Python/Shane_Thuya_Ko_Car_Brand_Classification_CNN.rar
+/Shane_Thuya_Ko_Car_Brand_Classification_CNN.rar
+
+# Ignore image files
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.webp
+*.tif
+*.tiff
