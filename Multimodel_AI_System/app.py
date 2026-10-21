@@ -1,5 +1,7 @@
 # Multi-modal AI : Image Captioning
 #-------------------------------------------
+import os
+os.environ["TF_USE_LEGACY_KERAS"] = "1"
 import streamlit as st # to build the web application
 from PIL import Image # to open and process uploaded image
 from transformers import pipeline # to use pre-trained model easily
