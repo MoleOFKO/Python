@@ -30,8 +30,9 @@ st.write(
 # Define a function to load the image captioning model
 def load_model():
     return pipeline(
-        task = "image-to-text",
-        model = "Salesforce/blip-image-captioning-base" # Specify the pretrained BLIP model
+        "image-to-text",
+        model = "Salesforce/blip-image-captioning-base", # Specify the pretrained BLIP model
+        framework = "pt"
     )
 
 # Create a file uploader that accepts image files 
@@ -61,6 +62,7 @@ if uploaded_file is not None:
                 # Generate a text description from the uploaded image
                 results = caption_model(
                     image,
+                    text = "the photography of",
                     max_new_tokens = 40 # limits the number of newly generated tokens
                 )
 
@@ -84,6 +86,7 @@ if uploaded_file is not None:
                 )
 
                 # Display the detailed error for debugging
+                st.write("Error Type: ", type(error).__name__)
                 st.code(str(error))
 
     # Draw a horizontal divider at the button of the page
