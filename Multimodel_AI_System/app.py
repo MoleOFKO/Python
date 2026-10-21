@@ -28,7 +28,7 @@ st.write(
 # Define a function to load the image captioning model
 def load_model():
     return pipeline(
-        task = "Image-to-Text",
+        task = "image-to-text",
         model = "Salesforce/blip-image-captioning-base" # Specify the pretrained BLIP model
     )
 
